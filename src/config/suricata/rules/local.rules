@@ -1,0 +1,1 @@
+alert http any any -> $HOME_NET any (msg:"HTTP test keyword detected"; content:"attack"; nocase; sid:1000001; rev:1;)

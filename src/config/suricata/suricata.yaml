@@ -1,30 +1,25 @@
 %YAML 1.1
 ---
-# Network interfaces
+
+# === Réseau à surveiller ===
+vars:
+  address-groups:
+    HOME_NET: "127.0.0.1"
+    EXTERNAL_NET: "!$HOME_NET"
+
+# === Interface de capture ===
 af-packet:
-  - interface: eth0
+  - interface: lo      # On écoute sur la loopback (localhost)
     cluster-id: 99
     cluster-type: cluster_flow
     defrag: yes
 
-# Home network
-vars:
-  address-groups:
-    HOME_NET: "192.168.0.0/16,10.0.0.0/8,172.16.0.0/12" # specifies internal/trusted networks (RFC1918 private address ranges)
-    EXTERNAL_NET: "!$HOME_NET" # all IPs not in HOME_NET
+# === Fichiers de règles ===
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - local.rules
 
-# Port groups
-port-groups:
-  HTTP_PORTS: "80"
-  SHELLCODE_PORTS: "!80"
-  ORACLE_PORTS: 1521
-  SSH_PORTS: 22
-  DNP3_PORTS: 20000
-  MODBUS_PORTS: 502
-  FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
-  FTP_PORTS: 21
-
-# Logging
+# === Logs (EVE JSON) ===
 outputs:
   - eve-log:
       enabled: yes
@@ -35,14 +30,15 @@ outputs:
         - http
         - dns
         - tls
+        - flow
 
-# Basic detection settings
+logging:
+  default-log-level: info
+
+# === Liens vers les autres fichiers ===
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
+thresholds-file: /etc/suricata/threshold.config
+
 detect:
   profile: medium
-  custom-values:
-    toclient-groups: 3
-    toserver-groups: 25
-
-# Threading
-threading:
-  set-cpu-affinity: no
