@@ -10,11 +10,10 @@ Solution de surveillance de sécurité utilisant Suricata IDS, Elasticsearch + K
 
 ## Architecture
 
-- **Snort** : 
 - **Suricata** : Système de détection d'intrusions réseau (IDS)
 - **Elasticsearch** : Stockage et indexation des logs
 - **Kibana** : Interface de visualisation des logs et tableaux de bord
-- **syslog-ng** : Collecte et transmission des logs. Va formater les logs de Suricata dans un format que va pouvoir exploiter elasticSearch.
+- **syslog-ng** : Collecte et transmission des logs. Va formater les logs de Suricata dans un format que va pouvoir exploiter ElasticSearch.
 - **Nginx** : Serveur web pour générer du trafic de test
 
 ## Documentation
@@ -146,8 +145,9 @@ graph TB
 src/
 ├── config/
 │   ├── nginx/nginx.conf          # Configuration du serveur web Nginx
-│   ├── suricata/suricata.yaml    # Configuration de l'IDS Suricata
+│   ├── suricata/suricata.yaml    # Configuration de l'IDS Suricata, passerelle entre ElasticSearch et Suricata
 │   └── syslog-ng/syslog-ng.conf  # Configuration de collecte des logs
+│   └── elasticsearch.conf        # Configuration du stockage des logs
 └── web/index.html                # Application web de test
 ```
 
