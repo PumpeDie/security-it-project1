@@ -6,6 +6,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     environment:
       - discovery.type=single-node
+      - ELASTIC_USERNAME=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - "ES_JAVA_OPTS=-Xms${ELASTIC_MEM_LIMIT} -Xmx${ELASTIC_MEM_LIMIT}"
       - xpack.security.enabled=true
@@ -61,7 +62,7 @@ services:
         condition: service_healthy
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_USERNAME=${ELASTIC_USER}
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
       - SERVER_PUBLICBASEURL=http://localhost:5601
     ports:
