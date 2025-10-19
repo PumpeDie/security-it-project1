@@ -22,6 +22,8 @@ Solution de surveillance de sécurité utilisant Suricata IDS, Elasticsearch + K
 
 📋 **[Justifications des Choix Techniques](docs/choix_techniques.md)** - Pourquoi Docker, Suricata, etc.
 
+ ⚔️ **[Scénarios d'attaques](Scenarios_attaques/Launch.md)** - Explication du lancement des attaques et descriptions détaillées
+
 ## Démarrage Rapide
 
 1. **Cloner le dépôt**
