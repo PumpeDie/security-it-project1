@@ -1,1 +1,34 @@
-alert http any any -> $HOME_NET any (msg:"HTTP test keyword detected"; content:"attack"; nocase; sid:1000001; rev:1;)
+###################################################
+# Règles de Détection pour notre projet
+###################################################
+
+# --- Scénario 1: Détection de Mots-Clés  ---
+
+# Alerte si le mot "attack" ou "attacker" apparaît dans l'URI
+alert http any any -> any any (msg:"WEB_ATTACK_Keyword detected in URI: attack"; flow:to_server; content:"attack"; http_uri; nocase; classtype:policy-violation; sid:1000001; rev:1;)
+alert http any any -> any any (msg:"WEB_ATTACK_Keyword detected in URI: attacker"; flow:to_server; content:"attacker"; http_uri; nocase; classtype:policy-violation; sid:1000002; rev:1;)
+
+
+# --- Scénario 2: Injection SQL ---
+
+# Détection des injections SQL : "OR 1=1" et l'apostrophe/guillemet double
+alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - OR 1=1"; flow:to_server; content:"|20|OR|20|1=1"; http_uri; nocase; classtype:attempted-user; sid:1000003; rev:1;)
+alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - Quote/Double Quote"; flow:to_server; pcre:"/(\'|\")/"; http_uri; classtype:attempted-user; sid:1000004; rev:1;)
+
+
+# --- Scénario 3: Path Traversal ---
+
+# Détection avec '../' 
+alert http any any -> any any (msg:"WEB_ATTACK_Path Traversal attempt - parent directory access"; flow:to_server; content:"../"; http_uri; classtype:attempted-admin; sid:1000005; rev:1;)
+
+
+# --- Scenario 4: Attaque par commande XSS ---
+
+# Détection du tag <script> dans l'URI 
+alert http any any -> any any (msg:"WEB_ATTACK_XSS attempt - script tag in URI"; flow:to_server; content:"<script>"; http_uri; nocase; classtype:attempted-user; sid:1000009; rev:1;)
+
+
+# --- Scenario 5: Attaque par Force Brute ---
+
+# Alerte si plus de 5 requêtes vers l'URI '/login' proviennent de la même source en 60 secondes.
+alert http any any -> any any (msg:"WEB_ATTACK_Brute Force Login attempt (Threshold Alert)"; flow:to_server; content:"/login"; http_uri; threshold: type limit, track by_src, count 5, seconds 60; classtype:attempted-dos; sid:1000011; rev:1;)
