@@ -13,8 +13,8 @@ alert http any any -> any any (msg:"WEB_ATTACK_Keyword detected in URI: attacker
 
 # Détection des injections SQL : "OR 1=1" et l'apostrophe/guillemet double
 alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - OR 1=1"; flow:to_server; content:"|20|OR|20|1=1"; http_uri; nocase; classtype:attempted-user; sid:1000003; rev:1;)
-alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - Single Quote"; flow:to_server; content:"'"; http_uri; classtype:attempted-user; sid:1000004; rev:1;)
-alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - Double Quote"; flow:to_server; content:!"\"!"; http_uri; classtype:attempted-user; sid:1000006; rev:1;)
+# alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - Single Quote"; flow:to_server; content:"'"; http_uri; classtype:attempted-user; sid:1000004; rev:1;)
+# alert http any any -> any any (msg:"WEB_ATTACK_SQL Injection attempt - Double Quote"; flow:to_server; content:!"\"!"; http_uri; classtype:attempted-user; sid:1000006; rev:1;)
 # --- Scénario 3: Path Traversal ---
 
 # Détection avec '../' 
