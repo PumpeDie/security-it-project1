@@ -3,6 +3,7 @@
 <div align="center">
 
 ![Statut](https://img.shields.io/badge/Statut-Terminé-success?style=for-the-badge)
+<br/>
 ![Technologies](https://img.shields.io/badge/Technologies-Docker%20%7C%20Suricata%20%7C%20Elasticsearch%20%7C%20Kibana%20%7C%20syslog--ng%20%7C%20Nginx-blue?style=for-the-badge)
 
 </div>
@@ -21,9 +22,16 @@ Solution de surveillance de sécurité utilisant Suricata IDS, Elasticsearch + K
 
 📖 **[Consignes du Projet](docs/consignes.md)** - Objectifs et barème détaillé
 
-📋 **[Justifications des Choix Techniques](docs/choix_techniques.md)** - Pourquoi Docker, Suricata, etc.
+📋 **[Guide d'Installation et d'Utilisation](docs/guide.md)** - Instructions pour configurer et utiliser le système
 
-⚔️ **[Scénarios d'attaques](Scenarios_attaques/Launch.md)** - Explication du lancement des attaques et descriptions détaillées
+💡 **[Justifications des Choix Techniques](docs/choix_techniques.md)** - Pourquoi Docker, Suricata, etc.
+
+⚔️ **[Scénarios d'attaques](Scenarios_attaques/Launch.md)** - Guide de lancement et descriptions des attaques :
+- [Injection de mots-clés](Scenarios_attaques/Description/1%20-%20Injection%20de%20mots-clés.md)
+- [Injection SQL](Scenarios_attaques/Description/2%20-%20Injection%20SQL.md)
+- [Path Traversal](Scenarios_attaques/Description/3%20-%20Path%20Traversal.md)
+- [Cross-Site Scripting](Scenarios_attaques/Description/4%20-%20Cross-Site%20Scripting.md)
+- [Brute Force](Scenarios_attaques/Description/5%20-%20Brute%20Force.md)
 
 ## Démarrage Rapide
 
@@ -169,13 +177,28 @@ Mot de passe
 ## Fichiers de Configuration
 
 ```
-src/
-├── config/
-│   ├── nginx/nginx.conf          # Configuration du serveur web Nginx
-│   ├── suricata/suricata.yaml    # Configuration de l'IDS Suricata, passerelle entre ElasticSearch et Suricata
-│   └── syslog-ng/syslog-ng.conf  # Configuration de collecte des logs
-│   └── elasticsearch.conf        # Configuration du stockage des logs
-└── web/index.html                # Application web de test
+.
+├── compose.yml                    # Configuration des services Docker
+├── run_attacks.sh                 # Script d'automatisation des attaques
+└── src/                          # Sources et configurations
+    ├── elasticsearch.yml         # Configuration Elasticsearch
+    ├── config/                   # Configurations des services
+    │   ├── kibana/              # Configuration Kibana
+    │   │   └── export.ndjson    # Export des tableaux de bord
+    │   ├── nginx/               # Configuration serveur web
+    │   │   └── nginx.conf       # Configuration Nginx
+    │   ├── suricata/           # Configuration IDS
+    │   │   ├── classification.config  # Classification des alertes
+    │   │   ├── reference.config      # Références des règles
+    │   │   ├── suricata.yaml         # Configuration principale
+    │   │   ├── threshold.config      # Seuils d'alertes
+    │   │   ├── update.yaml           # Configuration des mises à jour
+    │   │   └── rules/               # Règles de détection
+    │   │       └── local.rules      # Règles personnalisées
+    │   └── syslog-ng/           # Configuration collecteur de logs
+    │       └── syslog-ng.conf   # Configuration syslog-ng
+    └── web/                    # Application web de test
+        └── index.html          # Page web simple pour les tests
 ```
 
 ## Arrêter le Système
@@ -219,6 +242,10 @@ docker compose down -v
 - Intégration d'un SOAR pour répondre aux alertes
 
 ---
+
+<div align="center">
+<img src="docs/screenshots/IAg_limitee_compact.png" alt="Logo" width="150"/>
+</div>
 
 ## 👥 Contributeurs
 
