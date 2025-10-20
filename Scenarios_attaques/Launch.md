@@ -36,7 +36,7 @@ chmod +x run_attacks.sh
 
 ### Scénarios testés
 
-1. **[Mots-clés](Description/1 - Injection de mots-clés.md)** : Détection de "attack" et "attacker" dans l'URI
+1. [Mots-clés](Description/1%20-%20Injection%20de%20mots-clés.md) : Détection de "attack" et "attacker" dans l'URI
 2. **SQL Injection** : Tentatives d'injection SQL avec OR 1=1 et quotes
 3. **Path Traversal** : Accès aux répertoires parents avec ../
 4. **XSS** : Injection de balises `<script>`
