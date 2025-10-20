@@ -37,10 +37,10 @@ chmod +x run_attacks.sh
 ### Scénarios testés
 
 1. [Mots-clés](Description/1%20-%20Injection%20de%20mots-clés.md) : Détection de "attack" et "attacker" dans l'URI
-2. **SQL Injection** : Tentatives d'injection SQL avec OR 1=1 et quotes
-3. **Path Traversal** : Accès aux répertoires parents avec ../
-4. **XSS** : Injection de balises `<script>`
-5. **Brute Force** : Tentatives multiples de connexion sur /login
+2. [SQL Injection](Description/2%20-%20Injection%20SQL.md) : Tentatives d'injection SQL avec OR 1=1 et quotes
+3. [Path Traversal](Description/3%20-%20Path%20Traversal.md) : Accès aux répertoires parents avec ../
+4. [XSS](Description/4%20-%20Cross-Site%20Scripting.md) : Injection de balises `<script>`
+5. [Brute Force](Description/5%20-%20Brute%20Force.md) : Tentatives multiples de connexion sur /login
 
 ## Visualisation des alertes
 
