@@ -205,12 +205,14 @@ docker compose down -v
 
 - **Contenairisation** : Le projet est dans plusieurs containers, cela est pratique pour travailler dessus depuis des environnements différents. Néanmoins, pour déployer notre solution, des ajustements de toutes les configs sont nécessaires.
 
+- **Injection SQL** : la règle Suricata semble mal écrite, et de nouvelles alertes sont envoyées à intervalles réguliers, sans nouvelles attaques.  
+  **Création de faux positifs**
+
 ### Améliorations possibles
 
 - Utilisation d'un autre IDS/IPS
 - Automatisation de l'envoi d'alertes
 - Utilisation d'autres règles Suricata
-- Injection SQL : la règle Suricata semble mal écrite, et de nouvelles alertes sont envoyées à intervalles régulières
 
 ### Perspectives technologiques
 
