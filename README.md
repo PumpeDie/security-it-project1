@@ -126,6 +126,8 @@ graph TB
 - **Objectif** : Visualise les logs et fournit des tableaux de bord de sécurité
 - **Dépendances** : Nécessite qu'Elasticsearch soit en fonctionnement
 
+![](./docs/dashboard.png)
+
 ### Suricata
 - **Objectif** : Surveille le trafic réseau et détecte les intrusions
 - **Configuration** : Surveille l'interface loopback avec logging JSON activé
