@@ -210,6 +210,7 @@ docker compose down -v
 - Utilisation d'un autre IDS/IPS
 - Automatisation de l'envoi d'alertes
 - Utilisation d'autres règles Suricata
+- Injection SQL : la règle Suricata semble mal écrite, et de nouvelles alertes sont envoyées à intervalles régulières
 
 ### Perspectives technologiques
 
