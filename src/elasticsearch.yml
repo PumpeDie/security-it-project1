@@ -1,10 +1,11 @@
-#emplacement du yml elasticsearch
-
-
 network.host: 0.0.0.0
-   
 transport.host: 0.0.0.0
-   
 http.port: 9200
-      
-discovery.seed_hosts: ["elasticsearch"]
+discovery.type: single-node
+
+xpack.security.enabled: true
+xpack.security.authc.api_key.enabled: true
+
+# Basic Auth credentials
+elasticsearch.username: Samuel
+elasticsearch.password: ${ELASTIC_PASSWORD}
