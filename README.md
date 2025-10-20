@@ -22,7 +22,7 @@ Solution de surveillance de sécurité utilisant Suricata IDS, Elasticsearch + K
 
 📋 **[Justifications des Choix Techniques](docs/choix_techniques.md)** - Pourquoi Docker, Suricata, etc.
 
- ⚔️ **[Scénarios d'attaques](Scenarios_attaques/Launch.md)** - Explication du lancement des attaques et descriptions détaillées
+⚔️ **[Scénarios d'attaques](Scenarios_attaques/Launch.md)** - Explication du lancement des attaques et descriptions détaillées
 
 ## Démarrage Rapide
 
@@ -117,11 +117,19 @@ graph TB
 ### Services Détaillés
 
 ### Elasticsearch
+
 - **Port** : 9200
 - **Objectif** : Stocke et indexe les logs de sécurité
 - **Configuration** : Mode nœud unique avec sécurité désactivée pour la simplicité
 
+Identifiant
+:   `elastic`
+
+Mot de passe
+:   `MetNousVingt`
+
 ### Kibana
+
 - **Port** : 5601
 - **Objectif** : Visualise les logs et fournit des tableaux de bord de sécurité
 - **Dépendances** : Nécessite qu'Elasticsearch soit en fonctionnement
@@ -129,16 +137,19 @@ graph TB
 ![](./docs/dashboard.png)
 
 ### Suricata
+
 - **Objectif** : Surveille le trafic réseau et détecte les intrusions
 - **Configuration** : Surveille l'interface loopback avec logging JSON activé
 - **Sortie des logs** : `/var/log/suricata/eve.json`
 
 ### syslog-ng
+
 - **Objectif** : Collecte les logs de Suricata et Nginx
 - **Configuration** : Redirige les logs vers la sortie console
 - **Sources** : Logs JSON Suricata, logs d'accès Nginx
 
 ### Nginx
+
 - **Port** : 8080
 - **Objectif** : Serveur web pour les tests et la génération de trafic HTTP
 - **Logs** : Logs d'accès et d'erreur collectés par syslog-ng
@@ -162,6 +173,7 @@ docker compose down
 ```
 
 Pour supprimer tous les volumes de données :
+
 ```bash
 docker compose down -v
 ```
@@ -173,3 +185,22 @@ docker compose down -v
 - Analyse des logs en temps réel avec Elasticsearch
 - Tableaux de bord de sécurité visuels avec Kibana
 - Règles de détection et seuils configurables
+
+## Analyse et conclusion
+
+### Limites du projet
+
+- Limites de détection
+  :   Suricata n'est sensible qu'aux menaces renseignés dans la configuration.
+
+- Contenairisation
+  :   Le projet est dans un container, cela est pratique pour travailler dessus depuis des environnements différents. Néanmoins, pour déployer notre solution, des ajustements de toutes les configs sont nécessaires.
+
+### Améliorations possibles
+
+- Utilisation d'un autre IDS/IPS
+- Automatisation des alertes
+
+### Perspectives technologiques
+
+- Intégration d'un SOAR pour répondre aux alertes
