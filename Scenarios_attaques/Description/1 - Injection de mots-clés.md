@@ -10,7 +10,6 @@ Cette attaque consiste à injecter des mots-clés suspects dans les URLs ou para
 - Tester les faux positifs et la sensibilité du WAF
 - Préparer une attaque plus sophistiquée en comprenant les défenses
 
-C'est souvent une phase de reconnaissance avant une attaque réelle.
 
 ## Popularité
 ⭐⭐ **Faible à Moyenne**
