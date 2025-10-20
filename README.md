@@ -51,31 +51,32 @@ Solution de surveillance de sécurité utilisant Suricata IDS, Elasticsearch + K
 
 ```mermaid
 graph TB
-    subgraph "Réseau Externe"
-        A[🌐 Attaquant]
-        U[👤 Utilisateur]
+    subgraph "External Network"
+        A[🌐 Attacker]
+        U[👤 User]
     end
     
     subgraph "Docker Network"
-        subgraph "Services Web"
-            N[🌐 Nginx<br/>:8080]
+        subgraph "Web Services"
+            N[🌐 Nginx:8080<br/>Web Server]
         end
         
         subgraph "Monitoring & Detection"
-            S[🛡️ Suricata<br/>IDS]
+            S[🛡️ Suricata IDS<br/>network_mode: host]
         end
         
-        subgraph "Log Management"
+        subgraph "Log Processing"
             SL[📊 syslog-ng<br/>Log Collector]
         end
         
-        subgraph "Data & Visualization"
-            E[🔍 Elasticsearch<br/>:9200]
-            K[📈 Kibana<br/>:5601]
+        subgraph "Data Storage & Visualization"
+            E[🔍 Elasticsearch:9200<br/>Log Database]
+            K[📈 Kibana:5601<br/>Dashboard UI]
+            SETUP[⚙️ Setup Service<br/>Dashboard Import]
         end
     end
     
-    subgraph "Volumes"
+    subgraph "Persistent Volumes"
         V1[(📁 nginx_logs)]
         V2[(📁 suricata_logs)]
         V3[(📁 es_data)]
@@ -86,32 +87,38 @@ graph TB
     A -->|Attack traffic| N
     
     %% Network monitoring
-    S -.->|Monitor loopback| N
+    S -.->|Monitor loopback<br/>interface 'lo'| N
     
-    %% Log collection
-    N -->|Access logs| V1
-    S -->|JSON logs| V2
-    V1 -->|Read logs| SL
-    V2 -->|Read logs| SL
-    SL -->|Forward logs| E
+    %% Log collection paths
+    N -->|Write logs| V1
+    S -->|Write EVE JSON| V2
+    V1 -->|Read access logs| SL
+    V2 -->|Read eve.json| SL
+    SL -->|Forward parsed<br/>logs via HTTP| E
     
     %% Data storage & visualization
-    E -->|Store data| V3
-    K -->|Query data| E
+    E -->|Store indexed data| V3
+    K -->|Query logs| E
     U -->|View dashboards| K
     
+    %% Setup service initialization
+    SETUP -->|Configure users<br/>& import dashboards| E
+    SETUP -->|Import visualizations| K
+    
     %% Styling
-    classDef webService fill:#e1f5fe
-    classDef security fill:#fff3e0
-    classDef logging fill:#f3e5f5
-    classDef storage fill:#e8f5e8
-    classDef volume fill:#fafafa
+    classDef webService fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef logging fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef storage fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef volume fill:#fafafa,stroke:#424242,stroke-width:2px
+    classDef setup fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     
     class N webService
     class S security
     class SL logging
     class E,K storage
     class V1,V2,V3 volume
+    class SETUP setup
 ```
 
 ### Services Détaillés
@@ -134,7 +141,11 @@ Mot de passe
 - **Objectif** : Visualise les logs et fournit des tableaux de bord de sécurité
 - **Dépendances** : Nécessite qu'Elasticsearch soit en fonctionnement
 
-![](./docs/dashboard.png)
+![Dashboard Overview](docs/screenshots/dashboard_overview.png)
+*Vue d'ensemble des 5 scénarios d'attaque avec compteurs et graphiques*
+
+![Discover Logs](docs/screenshots/discover_logs.png)
+*Exploration des logs collectés par Suricata*
 
 ### Suricata
 
