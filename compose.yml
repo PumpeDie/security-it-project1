@@ -1,6 +1,8 @@
+# Security IT stack configuration - Network monitoring and security analytics platform
 name: security-it-stack
 
 services:
+  # Elasticsearch - Core storage and search engine for logs and metrics
   elasticsearch:
     container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
@@ -24,35 +26,7 @@ services:
       timeout: 10s
       retries: 5
 
-  # Setup service handles initial configuration for Elasticsearch and Kibana
-  setup:
-    image: curlimages/curl:latest
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    command: >
-      sh -c '
-        sleep 30
-        # Configure Kibana system user
-        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_security/user/kibana_system/_password -H "Content-Type: application/json" -d "{\"password\":\"${ELASTIC_PASSWORD}\"}"
-        
-        # Create role for syslog-ng with appropriate permissions
-        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_security/role/syslog-ng -H "Content-Type: application/json" -d "{\"cluster\":[\"monitor\",\"manage_index_templates\"],\"indices\":[{\"names\":[\"syslog-ng-*\"],\"privileges\":[\"create_index\",\"create\",\"write\",\"manage\"]}]}"
-        
-        # Create syslog-ng user and assign role
-        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_security/user/${SYSLOG_USER} -H "Content-Type: application/json" -d "{\"password\":\"${SYSLOG_PASSWORD}\",\"roles\":[\"syslog-ng\"],\"full_name\":\"Syslog NG User\"}"
-        
-        # Create initial index and template for syslog-ng data
-        curl -s -X PUT -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/syslog-ng-$(date +%Y.%m.%d) -H "Content-Type: application/json" -d "{\"settings\":{\"number_of_shards\":1,\"number_of_replicas\":0}}"
-        curl -s -X PUT -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_index_template/syslog-ng -H "Content-Type: application/json" -d "{\"index_patterns\":[\"syslog-ng-*\"],\"template\":{\"settings\":{\"number_of_shards\":1,\"number_of_replicas\":0},\"mappings\":{\"properties\":{\"@timestamp\":{\"type\":\"date\"}}}}}"
-        
-        # Wait for Kibana to be available
-        until curl -s http://kibana:5601/api/status | grep -q "\"status\":{\"overall\":{\"level\":\"available\""; do sleep 5; done
-        
-        # Create Kibana index pattern for syslog-ng data
-        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/saved_objects/index-pattern/syslog-ng -d "{\"attributes\":{\"title\":\"syslog-ng-*\",\"timeFieldName\":\"@timestamp\"}}"
-      '
-
+  # Kibana - Web UI for visualization and management of Elasticsearch data
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
@@ -67,6 +41,75 @@ services:
     ports:
       - "${KIBANA_PORT}:5601"
 
+  # Setup service - Initial configuration of Elasticsearch, Kibana, and dashboards import
+  # Handles all initialization tasks in a single container to reduce resource usage
+  setup:
+    image: curlimages/curl:latest
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_started
+    command: >
+      sh -c '
+        echo "Configuring Elasticsearch..."
+        # Configure Kibana system user
+        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_security/user/kibana_system/_password -H "Content-Type: application/json" -d "{\"password\":\"${ELASTIC_PASSWORD}\"}"
+        
+        # Create role and user for syslog-ng with appropriate permissions
+        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_security/role/syslog-ng -H "Content-Type: application/json" -d "{\"cluster\":[\"monitor\",\"manage_index_templates\"],\"indices\":[{\"names\":[\"syslog-ng-*\"],\"privileges\":[\"create_index\",\"create\",\"write\",\"manage\"]}]}"
+        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_security/user/${SYSLOG_USER} -H "Content-Type: application/json" -d "{\"password\":\"${SYSLOG_PASSWORD}\",\"roles\":[\"syslog-ng\"],\"full_name\":\"Syslog NG User\"}"
+        
+        # Create initial index and template for syslog-ng data
+        curl -s -X PUT -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/syslog-ng-$(date +%Y.%m.%d) -H "Content-Type: application/json" -d "{\"settings\":{\"number_of_shards\":1,\"number_of_replicas\":0}}"
+        curl -s -X PUT -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200/_index_template/syslog-ng -H "Content-Type: application/json" -d "{\"index_patterns\":[\"syslog-ng-*\"],\"template\":{\"settings\":{\"number_of_shards\":1,\"number_of_replicas\":0},\"mappings\":{\"properties\":{\"@timestamp\":{\"type\":\"date\"}}}}}"
+        echo "Elasticsearch configuration completed."
+        
+        # Wait for Kibana to be fully available before importing dashboards
+        echo "Waiting for Kibana to be fully available..."
+        until curl -s http://kibana:5601/api/status | grep -q "\"status\":{\"overall\":{\"level\":\"available\""; do
+          echo "Kibana not ready yet - sleeping 10s"
+          sleep 10
+        done
+        
+        # Additional wait to ensure Kibana is fully initialized
+        echo "Kibana is up, waiting 20 more seconds for full initialization..."
+        sleep 20
+        
+        # Create Kibana index pattern for syslog-ng data
+        echo "Creating Kibana index pattern..."
+        curl -s -X POST -u elastic:${ELASTIC_PASSWORD} -H "kbn-xsrf: true" -H "Content-Type: application/json" \
+          http://kibana:5601/api/saved_objects/index-pattern/syslog-ng \
+          -d "{\"attributes\":{\"title\":\"syslog-ng-*\",\"timeFieldName\":\"@timestamp\"}}"
+        
+        # Import dashboards with retry mechanism
+        echo "Importing dashboards..."
+        MAX_RETRIES=3
+        for i in $(seq 1 $MAX_RETRIES); do
+          echo "Import attempt $i of $MAX_RETRIES"
+          RESPONSE=$(curl -s -X POST "http://kibana:5601/api/saved_objects/_import?overwrite=true" \
+            -u elastic:${ELASTIC_PASSWORD} \
+            -H "kbn-xsrf: true" \
+            -F file=@/tmp/export.ndjson)
+            
+          if echo "$RESPONSE" | grep -q "\"success\":true"; then
+            echo "Dashboard import successful!"
+            break
+          else
+            echo "Import attempt $i failed. Response: $RESPONSE"
+            if [ "$i" -lt "$MAX_RETRIES" ]; then
+              echo "Waiting 10s before retry..."
+              sleep 10
+            else
+              echo "All import attempts failed. Check logs for details."
+            fi
+          fi
+        done
+      '
+    volumes:
+      - ./src/config/kibana/export.ndjson:/tmp/export.ndjson:ro
+
+  # Suricata - Network IDS/IPS for traffic monitoring and threat detection
   suricata:
     container_name: suricata
     image: jasonish/suricata:latest
@@ -78,6 +121,7 @@ services:
       - suricata_logs:/var/log/suricata
     command: ["/usr/bin/suricata", "-c", "/etc/suricata/suricata.yaml", "-i", "lo", "-v"]
 
+  # Syslog-ng - Log collection and forwarding to Elasticsearch
   syslog-ng:
     container_name: syslog-ng
     image: ${SYSLOG_IMAGE}
@@ -93,6 +137,7 @@ services:
       setup:
         condition: service_completed_successfully
 
+  # Nginx - Web server for hosting test applications and receiving attack traffic
   nginx:
     container_name: nginx
     image: nginx:alpine
@@ -104,6 +149,7 @@ services:
       - nginx_logs:/var/log/nginx
     command: sh -c "mkdir -p /var/log/nginx && touch /var/log/nginx/access.log && touch /var/log/nginx/error.log && nginx -g 'daemon off;'"
 
+# Persistent storage volumes
 volumes:
   es_data:
   suricata_logs:
