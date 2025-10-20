@@ -190,16 +190,15 @@ docker compose down -v
 
 ### Limites du projet
 
-- Limites de détection
-  :   Suricata n'est sensible qu'aux menaces renseignés dans la configuration.
+- **Limites de détection** : Suricata n'est sensible qu'aux menaces renseignés dans la configuration.
 
-- Contenairisation
-  :   Le projet est dans un container, cela est pratique pour travailler dessus depuis des environnements différents. Néanmoins, pour déployer notre solution, des ajustements de toutes les configs sont nécessaires.
+- **Contenairisation*** : Le projet est dans plusieurs containers, cela est pratique pour travailler dessus depuis des environnements différents. Néanmoins, pour déployer notre solution, des ajustements de toutes les configs sont nécessaires.
 
 ### Améliorations possibles
 
 - Utilisation d'un autre IDS/IPS
-- Automatisation des alertes
+- Automatisation de l'envoi d'alertes
+- Utilisation d'autres règles Suricata
 
 ### Perspectives technologiques
 
