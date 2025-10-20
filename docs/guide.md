@@ -216,3 +216,16 @@ volumes:
 ```
 
 Cette architecture permet aux services de partager des données tout en maintenant l'isolation des conteneurs.
+
+## Troubleshooting
+
+### Problème : Le script ne se lance pas
+
+- Vérifier les permissions du fichier `run_attacks.sh` :  
+  ```bash
+  chmod +x src/scripts/run_attacks.sh
+  ```
+- Rentrer la commande suivante :
+  ```bash
+  sed -i 's/\r$//' run_attacks.sh
+  ```

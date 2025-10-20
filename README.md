@@ -2,7 +2,8 @@
 
 <div align="center">
 
-![Statut](https://img.shields.io/badge/Statut-En%20Développement-orange?style=for-the-badge)
+![Statut](https://img.shields.io/badge/Statut-Terminé-success?style=for-the-badge)
+![Technologies](https://img.shields.io/badge/Technologies-Docker%20%7C%20Suricata%20%7C%20Elasticsearch%20%7C%20Kibana%20%7C%20syslog--ng%20%7C%20Nginx-blue?style=for-the-badge)
 
 </div>
 
@@ -217,3 +218,58 @@ docker compose down -v
 ### Perspectives technologiques
 
 - Intégration d'un SOAR pour répondre aux alertes
+
+---
+
+## 👥 Contributeurs
+
+<div align="center">
+
+<table>
+<tr>
+    <td align="center">
+    <a href="https://github.com/PumpeDie">
+        <img src="https://github.com/PumpeDie.png" width="100px;" alt="PumpeDie"/>
+        <br />
+        <sub><b>PumpeDie</b></sub>
+        <br />
+        <sub>Samuel PLET</sub>
+    </a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/realnitsuj">
+        <img src="https://github.com/realnitsuj.png" width="100px;" alt="realnitsuj"/>
+        <br />
+        <sub><b>realnitsuj</b></sub>
+        <br />
+        <sub>Justin BOSSARD</sub>
+    </a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/paulm123456789">
+        <img src="https://github.com/paulm123456789.png" width="100px;" alt="paulm123456789"/>
+        <br />
+        <sub><b>paulm123456789</b></sub>
+        <br />
+        <sub>Paul MATHE</sub>
+    </a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/Go-GoZeppeli">
+        <img src="https://github.com/Go-GoZeppeli.png" width="100px;" alt="Go-GoZeppeli"/>
+        <br />
+        <sub><b>Go-GoZeppeli</b></sub>
+        <br />
+        <sub>Mattéo GOUHIER</sub>
+    </a>
+    </td>
+</tr>
+</table>
+
+</div>
+
+---
+
+<div align="center">
+  <sub>Projet réalisé dans le cadre du cours de Sécurité Informatique - UQAC 2025</sub>
+</div>
