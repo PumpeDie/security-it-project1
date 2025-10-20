@@ -126,7 +126,7 @@ Identifiant
 :   `elastic`
 
 Mot de passe
-:   `MetNousVingt`
+:   `MetNousCent`
 
 ### Kibana
 
